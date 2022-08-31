@@ -11,12 +11,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class TaskController extends AbstractController
 {
-    private $doctrine;
     /**
      * @Route("/tasks", name="task_list")
      */
-
-    //Accès au repository par l'intermédiaire de L'entity manager
 
     public function listAction(EntityManagerInterface $em)
     {
