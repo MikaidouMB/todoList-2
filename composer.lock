@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2802173efeb843f7738f8dee5978c3a4",
+    "content-hash": "c4088aebf9a0315b388db4f497dd438b",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -489,7 +489,7 @@
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "2.4.0",
+            "version": "2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
@@ -10175,7 +10175,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.2.5",
+        "php": ">=8.0",
         "ext-ctype": "*",
         "ext-iconv": "*"
     },
