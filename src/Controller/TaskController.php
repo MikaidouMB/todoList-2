@@ -4,21 +4,30 @@ namespace App\Controller;
 
 use App\Entity\Task;
 use App\Form\TaskType;
+use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class TaskController extends AbstractController
 {
+    private EntityManagerInterface $em;
+    private TaskRepository $taskRepository;
+
+    public function __construct(EntityManagerInterface $em, TaskRepository $taskRepository) {
+        $this->em = $em;
+        $this->taskRepository = $taskRepository;
+    }
     /**
      * @Route("/tasks", name="task_list")
      */
 
-    public function listAction(EntityManagerInterface $em)
+    public function listAction(): Response
     {
-        $repository = $em->getRepository(Task::class);
-        $tasks = $repository->findAll();
+        $this->em->getRepository(Task::class);
+        $tasks = $this->taskRepository->findAll();
         return $this->render('task/list.html.twig', [
             'tasks' => $tasks
         ]);
@@ -34,11 +43,10 @@ class TaskController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-
-            $em->persist($task);
-            $em->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $task->setUser($this->getUser());
+            $this->em->persist($task);
+            $this->em->flush();
 
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
 
