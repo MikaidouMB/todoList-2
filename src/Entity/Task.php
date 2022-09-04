@@ -9,13 +9,19 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
 {
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTimeImmutable());
+        $this->toogle(0);
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: Types::STRING)]
     private ?string $title = null;
@@ -25,6 +31,10 @@ class Task
 
     #[ORM\Column]
     private ?bool $isDone = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "tasks")]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $user;
 
     public function getId(): ?int
     {
@@ -67,14 +77,26 @@ class Task
         return $this;
     }
 
-    public function isIsDone(): ?bool
+    public function isDone(): ?bool
     {
         return $this->isDone;
     }
 
-    public function setIsDone(bool $isDone): self
+    public function toogle(bool $isDone): self
     {
         $this->isDone = $isDone;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
