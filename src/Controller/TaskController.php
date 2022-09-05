@@ -99,12 +99,32 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task): RedirectResponse
     {
+        $rolesUser = $this->getUser()->getRoles();
 
-        $this->em->remove($task);
-        $this->em->flush();
+        if ($this->getUser() !== null) {
+            if ($task->getUser() == null && in_array('ROLE_ADMIN', $rolesUser)){
+                $this->em->remove($task);
+                $this->em->flush();
 
-        $this->addFlash('success', 'La tâche a bien été supprimée.');
+                $this->addFlash('success', 'La tâche a bien été supprimée par vous administrateur.');
 
+                return $this->redirectToRoute('task_list');
+            }
+
+            if ($task->getUser() !== null){
+                if ($this->getUser()->getId() == $task->getUser()->getId()){
+                    $this->em->remove($task);
+                    $this->em->flush();
+
+                    $this->addFlash('success', 'La tâche a bien été supprimée.');
+
+                    return $this->redirectToRoute('task_list');
+                }
+            }
+        }
+
+        $this->addFlash('danger', 'Vous ne pouvez pas supprimer cette tâche.');
         return $this->redirectToRoute('task_list');
+
     }
 }
