@@ -13,7 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
-
+/**
+ * @Route("/admin", name="admin_")
+ */
 class UserController extends AbstractController
 {
     private EntityManagerInterface $em;
