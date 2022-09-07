@@ -99,10 +99,8 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task): RedirectResponse
     {
-        $rolesUser = $this->getUser()->getRoles();
-
         if ($this->getUser() !== null) {
-            if ($task->getUser() == null && in_array('ROLE_ADMIN', $rolesUser)){
+            if ($task->getUser() == null && $this->isGranted('ROLE_ADMIN')){
                 $this->em->remove($task);
                 $this->em->flush();
 
