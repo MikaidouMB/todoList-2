@@ -7,9 +7,10 @@
 {% block body %}
     {% if users|length == 0 %}
         <div class="alert alert-warning" role="alert">
-            Il n'y a pas encore d'utilisateur enregistré. <a href="{{ path('user_create') }}" class="btn btn-warning pull-right">Créer un utilisateur</a>
+            Il n'y a pas encore d'utilisateur enregistré.
         </div>
     {% else %}
+        <a href="{{ path('admin_user_create') }}" class="btn btn-primary pull-right">Créer un utilisateur</a>
         <div class="row">
             <table class="table">
                 <thead>
@@ -28,8 +29,6 @@
                         <td>{{ user.email }}</td>
                         <td>
                             <a href="{{ path('admin_user_edit', {'id' : user.id}) }}" class="btn btn-success btn-sm">Edit</a>
-                        </td>
-                        <td>
                             <a href="{{ path('admin_user_delete', {'id' : user.id}) }}" class="btn btn-danger btn-sm">Delete</a>
                         </td>
                     </tr>

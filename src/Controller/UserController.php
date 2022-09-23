@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Task;
 use App\Entity\User;
+use App\Form\RegistrationFormType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,6 +37,39 @@ class UserController extends AbstractController
         $users = $this->userRepository->findAll();
         return $this->render('user/list.html.twig', [
             'users' => $users
+        ]);
+    }
+
+    /**
+     * @Route("/create", name="user_create")
+     */
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher,
+                             EntityManagerInterface $entityManager): Response
+    {
+        $user = new User();
+        $form = $this->createForm(RegistrationFormType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // encode the plain password
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('password')->getData()
+                )
+            );
+            $user->setRoles(
+                $form->get('roles')->getData()
+            );
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_user_list');
+        }
+
+        return $this->render('registration/register.html.twig', [
+            'registrationForm' => $form->createView(),
         ]);
     }
 
