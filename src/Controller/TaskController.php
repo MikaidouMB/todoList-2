@@ -39,22 +39,25 @@ class TaskController extends AbstractController
      */
     public function createAction(Request $request): RedirectResponse|Response
     {
-        $task = new Task();
-        $form = $this->createForm(TaskType::class, $task);
+        if ($this->getUser()) {
+            $task = new Task();
+            $form = $this->createForm(TaskType::class, $task);
 
-        $form->handleRequest($request);
+            $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $task->setUser($this->getUser());
-            $this->em->persist($task);
-            $this->em->flush();
+            if ($form->isSubmitted() && $form->isValid()) {
+                $task->setUser($this->getUser());
+                $this->em->persist($task);
+                $this->em->flush();
 
-            $this->addFlash('success', 'La tâche a été bien été ajoutée.');
+                $this->addFlash('success', 'La tâche a été bien été ajoutée.');
 
-            return $this->redirectToRoute('task_list');
+                return $this->redirectToRoute('task_list');
+            }
+        }else {
+            return $this->redirectToRoute('homepage');
         }
-
-        return $this->render('task/create.html.twig', ['form' => $form->createView()]);
+       return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
     /**
