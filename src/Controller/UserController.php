@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Task;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
@@ -21,10 +22,12 @@ class UserController extends AbstractController
     private EntityManagerInterface $em;
     private UserRepository $userRepository;
 
-    public function __construct(EntityManagerInterface $em, UserRepository $userRepository) {
+    public function __construct(EntityManagerInterface $em, UserRepository $userRepository)
+    {
         $this->em = $em;
         $this->userRepository = $userRepository;
     }
+
     /**
      * @Route("/users", name="user_list")
      */
@@ -50,14 +53,14 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = $form->get('password')->getData();
-            if (!empty($plainPassword)){
+            if (!empty($plainPassword)) {
                 $user->setPassword(
                     $userPasswordHasher->hashPassword(
                         $user,
                         $form->get('password')->getData()
                     )
                 );
-            }else {
+            } else {
                 $user->setPassword($originalPassword);
             }
 
@@ -67,9 +70,22 @@ class UserController extends AbstractController
 
             $this->addFlash('success', "L'utilisateur a bien été modifié");
 
-            return $this->redirectToRoute('user_list');
+            return $this->redirectToRoute('admin_user_list');
         }
 
         return $this->render('user/edit.html.twig', ['form' => $form->createView(), 'user' => $user]);
     }
+
+    /**
+     * @Route("/users/{id}/delete", name="user_delete")
+     */
+    public function deleteUserAction(User $user): RedirectResponse
+    {
+        $this->em->remove($user);
+        $this->em->flush();
+
+        $this->addFlash('success', 'L\' utilisateur a bien été supprimé par vous.');
+
+        return $this->redirectToRoute('admin_user_list',[], Response::HTTP_SEE_OTHER);
+            }
 }
