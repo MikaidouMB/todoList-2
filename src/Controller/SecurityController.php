@@ -14,7 +14,7 @@ class SecurityController extends AbstractController
     public function loginAction(Request $request)
     {
         $authenticationUtils = $this->get('security.authentication_utils');
-
+dd($authenticationUtils);
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
