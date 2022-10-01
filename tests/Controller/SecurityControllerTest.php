@@ -6,6 +6,7 @@ use App\DataFixtures\UserFixtures;
 use App\Repository\UserRepository;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class SecurityControllerTest extends WebTestCase
@@ -22,39 +23,32 @@ class SecurityControllerTest extends WebTestCase
         $this->client->followRedirects();
 
         $this->databaseTool = static::getContainer()->get(DatabaseToolCollection::class)->get();
+        $this->databaseTool->loadFixtures([UserFixtures::class]);
+
+
     }
 
     //Test s'il y a un formulaire dans la page login
     public function testLoginpage(): void
     {
         $this->client->request('GET', '/login');
+
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertSelectorExists('form');
         $this->assertSelectorNotExists('.div','Invalid credentials.');
 
     }
 
-    //Aucune connexion ne passe, assertionRedirects a revoir
     public function testSuccessfulLogin()
     {
         $crawler = $this->client->request('GET', '/login');
-        $this->databaseTool->loadFixtures([UserFixtures::class]);
-        //dd($users->findAll());
         $form = $crawler->selectButton('Se connecter')->form([
             "_username" =>'testUser',
             '_password' => '00000'
         ]);
 
         $this->client->submit($form);
-        //$this->assertSelectorNotExists('.error-login','Invalid credentials.');
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-        //dd($crawler->get);
-        //$this->assertResponseRedirects('http://localhost:8000/');
-   //     $this->assertSelectorTextContains('.error-login','Invalid credentials.');
-
-       //$this->assertSelectorTextNotContains('.error-login','Invalid credentials.');
-
-     //   $this->assertSelectorNotExists('.error-login','Invalid credentials.');
     }
 
     public function testLoginWithBadCredentials()
@@ -65,10 +59,8 @@ class SecurityControllerTest extends WebTestCase
             "_username" =>'badUsername',
                 '_password' => 'badPassword'
             ]);
-
         $this->client->submit($form);
-
-       $this->assertSelectorTextContains('.error-login','Invalid credentials.');
+        $this->assertSelectorTextContains('.error-login','Invalid credentials.');
     }
 
     public function testRegisterWithWrongEmail(): void
@@ -97,6 +89,25 @@ class SecurityControllerTest extends WebTestCase
         );
         $this->client->submit($form);
         $this->assertSelectorExists('div:contains("Les deux mots de passe doivent correspondre.")');
+    }
+
+
+    public function testRegisterSuccessfully(): void
+    {
+        $crawler = $this->client->request('GET', '/register');
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $form = $crawler->selectButton('Ajouter')->form([
+                "registration_form[username]" =>'testUser',
+                'registration_form[email]' => 'userTest156@hotmail.fr',
+                'registration_form[password][first]' => '0000',
+                'registration_form[password][second]' =>'0000'
+            ]
+        );
+        $this->client->submit($form);
+        $this->assertEquals('/',$this->client->getRequest()->getRequestUri());
+        $testUser = $userRepository->findOneByEmail('userTest156@hotmail.fr');
+        $this->client->loginUser($testUser);
+        $this->client->request('GET', '/');
     }
 
 }

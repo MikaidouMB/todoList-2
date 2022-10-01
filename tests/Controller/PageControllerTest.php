@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Tests\Controller;
+use App\DataFixtures\UserFixtures;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -21,14 +22,9 @@ class PageControllerTest extends WebTestCase
         $this->databaseTool = static::getContainer()->get(DatabaseToolCollection::class)->get();
     }
 
-//Comment tester @Route("/", name="homepage")
-//	    public function indexAction(){
-//	        return $this->render('default/index.html.twig');
-//	    }
     public function testpage(): void
     {
         $this->client->request('GET', '/');
-       //dd($crawler->html());
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
@@ -48,10 +44,26 @@ class PageControllerTest extends WebTestCase
    public function testLoginpage(): void
     {
         $this->client->request('GET', '/login');
+        $this->assertEquals('/login',$this->client->getRequest()->getRequestUri());
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
-    public function testRestrictedTasksPage(): void
+    public function testSuccessfullLogin()
+    {
+        $crawler = $this->client->request('GET', '/login');
+        $this->databaseTool->loadFixtures([UserFixtures::class]);
+        $form = $crawler->selectButton('Se connecter')->form([
+            "_username" =>'testUser',
+            '_password' => '00000'
+        ]);
+
+        $this->client->submit($form);
+        $this->assertSelectorNotExists('.error-login','Invalid credentials.');
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertEquals('/',$this->client->getRequest()->getRequestUri());
+    }
+
+    public function testTasksPage(): void
     {
         $this->client->request('GET', '/tasks');
 
@@ -60,34 +72,36 @@ class PageControllerTest extends WebTestCase
     }
 
     //Je teste quand l'utilisateur tente d'acceder à la page de création des taches sans être connecté
-  /*  public function testRestrictedCreateTasksPage(): void
+    public function testRestrictedCreateTasksPage(): void
     {
-        $this->client->followRedirects();
+        $this->client->request('GET', '/tasks/create');
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
-        $crawler = $this->client->request('GET', '/tasks/create');
-
-        $this->assertResponseRedirects('http://localhost:8000/');
+        $this->assertEquals('/',$this->client->getRequest()->getRequestUri());
     }
 
-    /*public function testRestrictedAdminUsersPage(): void
+    public function testRestrictedAdminUsersPage(): void
     {
         $this->client->request('GET', '/admin/users');
 
+        $this->assertEquals('/login',$this->client->getRequest()->getRequestUri());
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
     }
 
-    /*public function testRestrictedAdminCreateUserPage(): void
+    public function testRestrictedAdminCreateUserPage(): void
     {
         $this->client->request('GET', '/admin/create');
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+        $this->assertEquals('/login',$this->client->getRequest()->getRequestUri());
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
     public function testRestrictedAdminEditUserPage(): void
     {
         $this->client->request('GET', '/admin/users/1/edit');
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
-    }*/
+        $this->assertEquals('/login',$this->client->getRequest()->getRequestUri());
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
 
 }
