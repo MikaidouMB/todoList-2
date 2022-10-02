@@ -2,6 +2,7 @@
 
 namespace App\Tests\Repository;
 
+use App\DataFixtures\AppFixtures;
 use App\DataFixtures\UserFixtures;
 use App\Repository\UserRepository;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
@@ -23,7 +24,7 @@ class UserRepositoryTest extends KernelTestCase
     }
 
     public function testCount() {
-        $this->databaseTool->loadFixtures([UserFixtures::class]);
+        $this->databaseTool->loadFixtures([AppFixtures::class]);
         $users = self::getContainer()->get(UserRepository::class)->count([]);
         $this->assertEquals(10,$users);
     }

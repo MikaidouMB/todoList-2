@@ -2,11 +2,9 @@
 
 namespace App\Tests\Controller;
 
-use App\DataFixtures\UserFixtures;
-use App\Repository\UserRepository;
+use App\DataFixtures\AppFixtures;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class SecurityControllerTest extends WebTestCase
@@ -23,12 +21,9 @@ class SecurityControllerTest extends WebTestCase
         $this->client->followRedirects();
 
         $this->databaseTool = static::getContainer()->get(DatabaseToolCollection::class)->get();
-        $this->databaseTool->loadFixtures([UserFixtures::class]);
-
-
+        $this->databaseTool->loadFixtures([AppFixtures::class]);
     }
 
-    //Test s'il y a un formulaire dans la page login
     public function testLoginpage(): void
     {
         $this->client->request('GET', '/login');
@@ -95,7 +90,7 @@ class SecurityControllerTest extends WebTestCase
     public function testRegisterSuccessfully(): void
     {
         $crawler = $this->client->request('GET', '/register');
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $userRepository = static::getContainer()->get(AppFixtures::class);
         $form = $crawler->selectButton('Ajouter')->form([
                 "registration_form[username]" =>'testUser',
                 'registration_form[email]' => 'userTest156@hotmail.fr',
