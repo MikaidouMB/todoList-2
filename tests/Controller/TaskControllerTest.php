@@ -3,7 +3,6 @@
 namespace App\Tests\Controller;
 
 use App\DataFixtures\AppFixtures;
-use App\Repository\UserRepository;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 class TaskControllerTest extends WebTestCase
 {
     private $client;
-    private $requestStack;
 
     public function setUp(): void
     {
@@ -92,4 +90,12 @@ class TaskControllerTest extends WebTestCase
         $this->assertEquals(1, $crawler->filter('div.alert-success')->count());
     }
 
+    public function testRemoveTaskSuccessfullyByAdmin()
+    {
+        $this->loginUser();
+        $crawler = $this->client->request('GET', '/tasks/1/delete');
+
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(1, $crawler->filter('div.alert-success')->count());
+    }
 }
