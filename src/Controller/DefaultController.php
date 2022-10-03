@@ -15,8 +15,6 @@ class DefaultController extends AbstractController
      */
     public function indexAction(Request $request)
     {
-       // dd($request->getRequestUri());
-
         return $this->render('default/index.html.twig');
     }
 }

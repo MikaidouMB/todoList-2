@@ -11,11 +11,6 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
-        $array = array(
-            "ROLE_USER" => 1,
-            "ROLE_ADMIN" => 2,
-        );
-
         for ($i = 0; $i < 10; $i++){
             $user = new User();
             $task = (new Task());
@@ -26,7 +21,7 @@ class AppFixtures extends Fixture
             $user->setUsername("testUser");
             $user->setEmail("userTest$i@hotmail.fr");
             $user->setPassword("00000");
-            $user->setRoles((array)array_rand($array));
+            $user->setRoles(["ROLE_ADMIN"]);
             $manager->persist($user);
 
             $manager->persist($task);
