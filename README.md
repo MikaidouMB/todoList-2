@@ -56,4 +56,4 @@ php bin/phpunit tests --coverage-html web/test-coverage
 ```
 ## Contribution
 
-[Lisez ceci avant de contribuer](https://github.com/MikaidouMB/todoList-2/blob/master/contribution.md)
+[Lisez ceci avant de contribuer](https://github.com/MikaidouMB/todoList-2/blob/master/documentations/contribution.md)
