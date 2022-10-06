@@ -5,7 +5,7 @@ Afin de contribuer au projet veuillez respecter ce qui suit.
 
 ## Qualitée du code
 
-Le code doit respecter les conventions **PSR**, il convient également de soumettre les fichiers à un analyseur de code comme [codeclimate](https://codeclimate.com/) et obtenir une note de A.
+Le code doit respecter les conventions **PSR**, il convient également de soumettre les fichiers à un analyseur de code comme [codacy](https://app.codacy.com/organizations/) et obtenir une note de A.
 
 Des tests unitaires et ou fonctionnel doivent être instaurés à l'aide de phpunit pour tester les nouvelles parties de code/méthodes/classes.
 
