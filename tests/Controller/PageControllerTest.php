@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Tests\Controller;
-use App\DataFixtures\UserFixtures;
+use App\DataFixtures\AppFixtures;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -22,24 +22,13 @@ class PageControllerTest extends WebTestCase
         $this->databaseTool = static::getContainer()->get(DatabaseToolCollection::class)->get();
     }
 
-    public function testpage(): void
-    {
-        $this->client->request('GET', '/');
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-    }
-
-
     public function testHomepage(): void
     {
       $this->client->request('GET', '/');
-        //FAIL
-      /*  $this->assertSelectorTextContains('h1',
-            "Bienvenue sur Todo List, l'application vous permettant de gérer l'ensemble de vos tâches
-             sans effort !");*/
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+      $this->assertEquals('/',$this->client->getRequest()->getRequestUri());
+
+      $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
-
-
 
    public function testLoginpage(): void
     {
@@ -48,10 +37,10 @@ class PageControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
-    public function testSuccessfullLogin()
+    public function testLoginSuccessfully()
     {
         $crawler = $this->client->request('GET', '/login');
-        $this->databaseTool->loadFixtures([UserFixtures::class]);
+        $this->databaseTool->loadFixtures([AppFixtures::class]);
         $form = $crawler->selectButton('Se connecter')->form([
             "_username" =>'testUser',
             '_password' => '00000'
@@ -71,7 +60,6 @@ class PageControllerTest extends WebTestCase
 
     }
 
-    //Je teste quand l'utilisateur tente d'acceder à la page de création des taches sans être connecté
     public function testRestrictedCreateTasksPage(): void
     {
         $this->client->request('GET', '/tasks/create');
