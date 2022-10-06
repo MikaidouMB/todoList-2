@@ -52,7 +52,7 @@ php bin/phpunit tests
 
 Pour recupérer le coverage au format html aprés le test
 ```bash
-php bin/phpunit tests --coverage-html web/test-coverage
+php bin/phpunit tests --coverage-html public/test-coverage
 ```
 ## Contribution
 
