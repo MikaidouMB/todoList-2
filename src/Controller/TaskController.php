@@ -88,12 +88,27 @@ class TaskController extends AbstractController
      */
     public function toggleTaskAction(Task $task): RedirectResponse
     {
-        $task->toogle(!$task->isDone());
+        if ($this->isGranted('ROLE_ADMIN')) {
 
-        $this->em->flush();
+            $task->toogle(!$task->isDone());
 
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
+            $this->em->flush();
 
+            $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
+            return $this->redirectToRoute('task_list');
+
+        }
+        if ($this->getUser()->getId() == $task->getUser()->getId()) {
+            $task->toogle(!$task->isDone());
+
+            $this->em->flush();
+
+            $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite par l\'auteur.', $task->getTitle()));
+            return $this->redirectToRoute('task_list');
+
+        }
+
+        $this->addFlash('danger', 'Vous ne pouvez pas marquer cette tâche.');
         return $this->redirectToRoute('task_list');
     }
 
@@ -102,12 +117,8 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task): RedirectResponse
     {
-        if (in_array("ROLE_ANONYMOUS",$this->getUser()->getRoles()))
-        {
-            throw $this->createAccessDeniedException('Votre rôle ne vous permet pas de supprimer de tâche');
-        }
         if ($this->getUser() !== null) {
-            if ($task->getUser() == null && $this->isGranted('ROLE_ADMIN')){
+            if ($this->isGranted('ROLE_ADMIN')){
                 $this->em->remove($task);
                 $this->em->flush();
 
@@ -116,8 +127,7 @@ class TaskController extends AbstractController
                 return $this->redirectToRoute('task_list');
             }
 
-            if ($task->getUser() !== null){
-                if ($this->getUser()->getId() == $task->getUser()->getId()){
+             if ($this->getUser()->getId() == $task->getUser()->getId()){
                     $this->em->remove($task);
                     $this->em->flush();
 
@@ -126,7 +136,6 @@ class TaskController extends AbstractController
                     return $this->redirectToRoute('task_list');
                 }
             }
-        }
 
         $this->addFlash('danger', 'Vous ne pouvez pas supprimer cette tâche.');
         return $this->redirectToRoute('task_list');
