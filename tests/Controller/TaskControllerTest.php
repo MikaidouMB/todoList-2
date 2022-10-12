@@ -68,6 +68,7 @@ class TaskControllerTest extends WebTestCase
 
     public function testToggleSuccessfully()
     {
+        $this->loginUser();
         $crawler = $this->client->request('GET', '/tasks/4/toggle');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertEquals(1, $crawler->filter('div.alert-success')->count());

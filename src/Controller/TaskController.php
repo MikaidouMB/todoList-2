@@ -65,31 +65,56 @@ class TaskController extends AbstractController
      */
     public function editAction(Task $task, Request $request):Response
     {
-        $form = $this->createForm(TaskType::class, $task);
+        if ($this->isGranted('ROLE_ADMIN')) {
 
-        $form->handleRequest($request);
+            $form = $this->createForm(TaskType::class, $task);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->em->flush();
+            $form->handleRequest($request);
 
-            $this->addFlash('success', 'La tâche a bien été modifiée.');
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->em->flush();
 
-            return $this->redirectToRoute('task_list');
+                $this->addFlash('success', 'La tâche a bien été modifiée.');
+
+                return $this->redirectToRoute('task_list');
+            }
+            return $this->render('task/edit.html.twig', [
+                'form' => $form->createView(),
+                'task' => $task,
+            ]);
         }
 
-        return $this->render('task/edit.html.twig', [
-            'form' => $form->createView(),
-            'task' => $task,
-        ]);
+        if ($task->getUser() !== null && $this->getUser()->getId() == $task->getUser()->getId()) {
+
+            $form = $this->createForm(TaskType::class, $task);
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->em->flush();
+
+                $this->addFlash('success', 'La tâche a bien été modifiée par l\'auteur.');
+
+                return $this->redirectToRoute('task_list');
+            }
+            return $this->render('task/edit.html.twig', [
+                'form' => $form->createView(),
+                'task' => $task,
+            ]);
+        }
+
+        $this->addFlash('danger', 'Vous ne pouvez pas modifier cette tâche.');
+
+        return $this->redirectToRoute('task_list');
     }
+
 
     /**
      * @Route("/tasks/{id}/toggle", name="task_toggle")
      */
     public function toggleTaskAction(Task $task): RedirectResponse
     {
-        if ($this->isGranted('ROLE_ADMIN')) {
-
+        if ($this->isGranted('ROLE_ADMIN')){
             $task->toogle(!$task->isDone());
 
             $this->em->flush();
@@ -98,7 +123,8 @@ class TaskController extends AbstractController
             return $this->redirectToRoute('task_list');
 
         }
-        if ($this->getUser()->getId() == $task->getUser()->getId()) {
+
+        if ($task->getUser() !== null && $this->getUser() === $task->getUser()) {
             $task->toogle(!$task->isDone());
 
             $this->em->flush();
