@@ -7,7 +7,9 @@
 {% block body %}
     <div class="row">
         {% if app.user %}
-            <a href="{{ path('task_create') }}" class="btn btn-success">Créer une nouvelle tâche</a>
+            {% if app.user.username is not same as ("anonymous") %}
+                <a href="{{ path('task_create') }}" class="btn btn-success">Créer une nouvelle tâche</a>
+            {% endif %}
         {% endif %}
         <a href="{{ path('task_list') }}" class="btn btn-info">Consulter la liste des tâches</a>
     </div>
