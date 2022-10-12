@@ -35,7 +35,7 @@ php bin/console doctrine:migrations:migrate
 Inserez des données fictives
 
 ```bash
-php bin/console doctrine:fixtures:load
+php bin/console doctrine:fixtures:load --group=group1
 ```
 
 Lancez le serveur symfony
