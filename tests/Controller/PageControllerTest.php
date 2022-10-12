@@ -3,8 +3,8 @@
 namespace App\Tests\Controller;
 use App\DataFixtures\AppTestFixtures;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class PageControllerTest extends WebTestCase
 {
