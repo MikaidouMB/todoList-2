@@ -102,6 +102,10 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task): RedirectResponse
     {
+        if (in_array("ROLE_ANONYMOUS",$this->getUser()->getRoles()))
+        {
+            throw $this->createAccessDeniedException('Votre rôle ne vous permet pas de supprimer de tâche');
+        }
         if ($this->getUser() !== null) {
             if ($task->getUser() == null && $this->isGranted('ROLE_ADMIN')){
                 $this->em->remove($task);
