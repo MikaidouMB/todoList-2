@@ -2,7 +2,7 @@
 
 namespace App\Tests\Controller;
 
-use App\DataFixtures\AppFixtures;
+use App\DataFixtures\AppTestFixtures;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +18,7 @@ class TaskControllerTest extends WebTestCase
         self::bootKernel();
         $this->client->followRedirects();
         $this->databaseTool = static::getContainer()->get(DatabaseToolCollection::class)->get();
-        $this->databaseTool->loadFixtures([AppFixtures::class]);
+        $this->databaseTool->loadFixtures([AppTestFixtures::class]);
     }
 
     public function loginUser(): void

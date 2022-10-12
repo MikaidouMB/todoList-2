@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Tests\Controller;
-use App\DataFixtures\AppFixtures;
+use App\DataFixtures\AppTestFixtures;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -40,7 +40,7 @@ class PageControllerTest extends WebTestCase
     public function testLoginSuccessfully()
     {
         $crawler = $this->client->request('GET', '/login');
-        $this->databaseTool->loadFixtures([AppFixtures::class]);
+        $this->databaseTool->loadFixtures([AppTestFixtures::class]);
         $form = $crawler->selectButton('Se connecter')->form([
             "_username" =>'testUser',
             '_password' => '00000'
